@@ -1,67 +1,39 @@
-# elevations = [ ]
-# with open('elevation_small.txt') as file:
-#     for line in file:
-#         elevations.append([int(e) for e in line.split(" ")])
-# len(elevations)
-# len(elevations[0])
+from PIL import Image, ImageDraw
 
+class Map:
+#creating a class for the map itself
+    def __init__(self, filename):
+        self.elevations = [] 
+        #creating the empty list for elevations
+        with open(filename) as file:
+            for line in file:
+                self.elevations.append([int(e) for e in line.split()])
+ #inputting the elevation altitudes into the empty list
+        self.maximum_elevation = max([max(row) for row in self.elevations])
+        self.minimum_elevation = min([min(row) for row in self.elevations])
+#finding the minimum and the maximum elevations 
+    def elevation(self, x, y):
+        return self.elevations[y][x]
+#finding the x and y coordinates for the map
+    def find_color(self, x, y): 
+        return int((self.elevation(x, y) - self.minimum_elevation) / (self.maximum_elevation - self.lowest_elevation) * 255)
+#finding the correct numerical value to assign them to colors
+class DrawMap:
+#creating a class for actually showing the colors and making the picture of the map
+    def __init__(self, Map, point):
+        self.Map = Map
+        self.picture = Image.new('RGBA', (len(self.Map.elevations[0]), len(self.Map.elevations)))
+        self.point = point
+#using "point" in order to find the starting point to create the line in map
+    def draw(self):
+        for x in range(len(self.Map.elevations[0])):
+            for y in range(len(self.Map.elevations)):
+                self.picture.putpixel((x, y), (self.Map.find_color(x, y), self.Map.find_color(x, y), self.Map.color(x, y)))
+        self.picture.save('map.png')
 
-# class ElevationMap:
-#     def __init__(self, filename):
-#         self.elevations =[]
-#         with open(elevation_) as file:
-#             for line in file:
-#                 self.elevations.append([int(e) for e in line.split()])
+    def print_path(self, point):
+        for item_point in point:
+            self.picture.putpixel(item_point, (156, 226, 227))
+        self.picture.save('aaronsmap.png')
+        return self.picture
 
-# elevation_graph = []
-# with open ("elevation_large.txt") as file
-
-# row_one = file.readline()
-# row_one_split = row_one.split()
-
-# # row,col = im.size
-# data=[] #r,g,b,i,j
-# pixels=im.load()
-# for i in range(row):
-#   for j in range(col):
-#     # data.append(pixels[i,j]+(i,j))
-
-from PIL import Image
-
-with open("elevation_large.txt") as file: 
-    elevation_list = []
-    row_one = file.readline()
-    row_one_split = row_one.split()
-    max_elevation = 0
-    minimum_elevation = 10000
-    
-    for elevations in row_one.split():
-        elevation_list.append([int(elevations)])
-        if int(elevations) > max_elevation:
-            max_elevation = int(elevations)
-        if int(elevations) < minimum_elevation:
-            minimum_elevation = int(elevations)
-         
-
-    for line in file.readline():
-        x = 0
-        row_split = line.split()
-
-    for elevations in row_split:
-        elevation_list[x].append(int(elevations))
-        if int(elevations) > max_elevation:
-            max_elevation = int(elevations)
-        if int(elevations) < minimum_elevation:
-            minimum_elevation = int(elevations)
-            x+=1   
-
-aarons_mountain = Image.new('RGB', (len(elevation_list), len(elevation_list[0])), (255,255,255))
-range_elevations = max_elevation - minimum_elevation
-
-for y in range(len(elevation_list)):
-    for x in range(len(elevation_list)):
-        color_type = (int(elevation_list[x][y] - minimum_elevation) / range_elevations
-        rgb_number = int(color_type*255)
-        aarons_mountain.putpixel((x, y), (rgb_number, rgb_number, rgb_number))
-
-aarons_mountain.save('mountainpass.jpg')
